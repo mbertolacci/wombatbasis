@@ -3,13 +3,16 @@ geoschem_main_settings <- function(
   simulation_menu,
   timestep_menu,
   advected_species_menu,
+  meteorology = c('geosfp', 'merra2'),
   passive_species_menu = geoschem_passive_species_menu(),
   extra = 'default'
 ) {
+  meteorology <- match.arg(meteorology)
+
   if (extra == 'default') {
     extra <- paste0(readLines(system.file(
       'extdata',
-      'input-geos-extra-default.txt',
+      sprintf('input-geos-extra-default-%s.txt', meteorology),
       package = 'wombatbasis'
     )), collapse = '\n')
   }
@@ -19,6 +22,7 @@ geoschem_main_settings <- function(
     timestep_menu = timestep_menu,
     advected_species_menu = advected_species_menu,
     passive_species_menu = passive_species_menu,
+    meteorology = meteorology,
     extra = extra
   ), class = 'geoschem_main_settings')
 }
@@ -26,7 +30,7 @@ geoschem_main_settings <- function(
 #' @export
 as.character.geoschem_main_settings <- function(x, ...) {
   sprintf(
-    'GEOS-CHEM UNIT TEST SIMULATION: geosfp_2x25_CO2
+    'GEOS-CHEM UNIT TEST SIMULATION: %s_2x25_CO2
 ------------------------+------------------------------------------------------
 %s
 ------------------------+------------------------------------------------------
@@ -38,6 +42,7 @@ as.character.geoschem_main_settings <- function(x, ...) {
 ------------------------+------------------------------------------------------
 END OF FILE             :
 ------------------------+------------------------------------------------------',
+    x$meteorology,
     as.character(x$simulation_menu),
     as.character(x$timestep_menu),
     as.character(x$advected_species_menu),
