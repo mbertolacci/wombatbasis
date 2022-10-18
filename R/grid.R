@@ -232,27 +232,40 @@ multiply_grids <- function(...) {
   output
 }
 
-.truncate_grid_times <- function(x) {
+.truncate_grid_times <- function(x, start = TRUE, end = TRUE) {
+  if (!('time' %in% names(dimnames(x)))) {
+    return(x)
+  }
   time_index <- which(names(dimnames(x)) == 'time')
   n_times <- dim(x)[time_index]
-  for (start_index in seq_len(n_times)) {
-    if (any(.index_array(x, time_index, start_index) != 0)) {
-      break
-    }
-  }
-  if (start_index == n_times) {
-    end_index <- n_times
-  } else {
-    for (last_non_zero_index in rev(seq_len(n_times))) {
-      if (any(.index_array(x, time_index, last_non_zero_index) != 0)) {
+
+  if (start) {
+    for (start_index in seq_len(n_times)) {
+      if (any(.index_array(x, time_index, start_index) != 0)) {
         break
       }
     }
-    if (last_non_zero_index == n_times) {
+  } else {
+    start_index <- 1
+  }
+
+  if (end) {
+    if (start_index == n_times) {
       end_index <- n_times
     } else {
-      end_index <- last_non_zero_index + 1
+      for (last_non_zero_index in rev(seq_len(n_times))) {
+        if (any(.index_array(x, time_index, last_non_zero_index) != 0)) {
+          break
+        }
+      }
+      if (last_non_zero_index == n_times) {
+        end_index <- n_times
+      } else {
+        end_index <- last_non_zero_index + 1
+      }
     }
+  } else {
+    end_index <- n_times
   }
 
   output <- .index_array(x, time_index, start_index : end_index)

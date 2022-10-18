@@ -29,7 +29,7 @@
           lubridate::year(configuration$main$simulation_menu$start)
         )
       },
-      cre = 'C',
+      cre = if (has_time_grid) 'R' else 'C',
       source_dimension = 'xy',
       source_unit = '1',
       operator = hemco_scale_factor_operator('multiplication')
@@ -65,7 +65,12 @@
 
     list(
       name = basis_function$name,
-      configuration = configuration
+      configuration = configuration,
+      mapping = data.frame(
+        basis_function = basis_function$name,
+        run = basis_function$name,
+        stringsAsFactors = FALSE
+      )
     )
   }
 

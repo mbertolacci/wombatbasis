@@ -121,6 +121,7 @@ write_geoschem_run <- function(run_configuration, run_directory) {
   symlinks <- run_configuration$symlinks
   for (path in names(symlinks)) {
     create_dirname(path)
+    unlink(file.path(run_directory, path))
     file.symlink(symlinks[[path]], file.path(run_directory, path))
   }
 
